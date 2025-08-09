@@ -3,1009 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>সোনালি - তোমার মিষ্টি বন্ধু 💖</title>
+    <title>আমার এআই বন্ধু</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" xintegrity="sha512-z3gLpd7yXhW8Lq9d3e8j5Tf5tA9r1s2c/6Fm+j6V+G4k/7Qv1Cj8yv6E6S3GzGz5Sg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
+        /* ফন্ট ইম্পোর্ট */
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
-        
-        :root {
-            --primary: #ec4899;
-            --secondary: #f472b6;
-            --light: #fce7f3;
-            --dark: #831843;
-        }
-        
+
+        /* কাস্টম স্টাইল */
         body {
             font-family: 'Hind Siliguri', sans-serif;
-            background-color: #fff5f7;
+            background: linear-gradient(135deg, #1d2b64, #f8cdda);
         }
         
-        .chat-bubble-ai {
-            background: white;
-            border-radius: 18px 18px 18px 4px;
-            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.1);
-        }
-        
-        .chat-bubble-user {
-            background: linear-gradient(135deg, #ec4899, #f472b6);
-            border-radius: 18px 18px 4px 18px;
-            color: white;
-        }
-        
-        .sidebar {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .sidebar-open {
-            transform: translateX(0);
-        }
-        
-        .message-enter {
-            animation: messageEnter 0.3s ease-out;
-        }
-        
-        @keyframes messageEnter {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .typing-indicator span {
-            display: inline-block;
+        .chat-window::-webkit-scrollbar {
             width: 8px;
-            height: 8px;
-            background-color: var(--primary);
-            border-radius: 50%;
+        }
+        .chat-window::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .chat-window::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        .loading-dots span {
+            height: 10px;
+            width: 10px;
             margin: 0 2px;
-            animation: typing 1.4s infinite ease-in-out;
+            background-color: #fff;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
         }
-        
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
+        .loading-dots .dot1 { animation-delay: -0.32s; }
+        .loading-dots .dot2 { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
         }
-        
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
+        /* বুলেট পয়েন্টের জন্য স্টাইল */
+        .ai-message ul {
+            list-style-type: disc;
+            padding-left: 2em;
+            margin-top: 0.5em;
         }
-        
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
+        .ai-message ol {
+            list-style-type: decimal;
+            padding-left: 2em;
+            margin-top: 0.5em;
         }
-        
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background-color: rgba(236, 72, 153, 0.5);
-            border-radius: 3px;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background-color: rgba(236, 72, 153, 0.1);
+        .ai-message li {
+            margin-bottom: 0.5em;
         }
     </style>
 </head>
-<body class="text-gray-800 overflow-hidden">
-    <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
-    
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar fixed left-0 top-0 h-full w-64 bg-white shadow-lg z-40">
-        <div class="p-4 border-b border-pink-100 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
-                    <i data-lucide="heart" class="text-pink-500"></i>
-                </div>
-                <h2 class="font-bold text-lg">সোনালি</h2>
-            </div>
-            <button id="close-sidebar" class="p-1 rounded-full hover:bg-pink-100">
-                <i data-lucide="x"></i>
-            </button>
-        </div>
-        
-        <div class="p-4">
-            <button id="new-chat-btn" class="w-full bg-pink-500 text-white py-2 px-4 rounded-lg flex items-center justify-center space-x-2 hover:bg-pink-600 transition">
-                <i data-lucide="plus"></i>
-                <span>নতুন চ্যাট</span>
-            </button>
-        </div>
-        
-        <div class="px-2">
-            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2">পুরোনো চ্যাট</h3>
-            <div id="chat-history" class="space-y-1 max-h-96 overflow-y-auto scrollbar-thin">
-                <!-- Chat history items will be added here dynamically -->
-            </div>
-        </div>
-        
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-pink-100">
-            <div id="user-info" class="flex items-center space-x-2">
-                <div id="user-avatar" class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
-                    <i data-lucide="user"></i>
-                </div>
-                <div id="user-name" class="text-sm font-medium">লগইন করুন</div>
-            </div>
-            <button id="login-btn" class="w-full mt-2 bg-pink-100 text-pink-600 py-2 px-4 rounded-lg text-sm hover:bg-pink-200 transition">
-                গুগল দিয়ে লগইন
-            </button>
-            <button id="logout-btn" class="hidden w-full mt-2 bg-gray-100 text-gray-600 py-2 px-4 rounded-lg text-sm hover:bg-gray-200 transition">
-                লগআউট
-            </button>
-        </div>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Login Container -->
+    <div id="login-container" class="flex flex-col items-center justify-center text-center p-8 bg-white bg-opacity-20 rounded-3xl shadow-xl backdrop-blur-lg transition-all duration-500 w-full max-w-sm">
+        <h1 class="text-3xl font-bold text-white mb-4">স্বাগতম!</h1>
+        <p class="text-white text-lg mb-6">চ্যাট শুরু করতে Google দিয়ে লগইন করুন।</p>
+        <button id="google-login-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 flex items-center gap-2">
+            <i class="fab fa-google"></i>
+            <span>Google দিয়ে লগইন করুন</span>
+        </button>
     </div>
-    
-    <!-- Admin Panel (Hidden by default) -->
-    <div id="admin-panel" class="hidden fixed inset-0 bg-white z-50 overflow-y-auto p-4">
-        <div class="max-w-4xl mx-auto">
-            <div class="flex justify-between items-center mb-6 border-b pb-4">
-                <h2 class="text-2xl font-bold text-pink-600">এডমিন প্যানেল</h2>
-                <button id="close-admin" class="p-2 rounded-full hover:bg-gray-100">
-                    <i data-lucide="x"></i>
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-pink-50 p-4 rounded-lg">
-                    <h3 class="font-semibold text-pink-700 mb-2">সক্রিয় ব্যবহারকারী</h3>
-                    <p id="active-users" class="text-3xl font-bold text-pink-600">0</p>
-                </div>
-                <div class="bg-pink-50 p-4 rounded-lg">
-                    <h3 class="font-semibold text-pink-700 mb-2">আজকের চ্যাট</h3>
-                    <p id="today-chats" class="text-3xl font-bold text-pink-600">0</p>
-                </div>
-                <div class="bg-pink-50 p-4 rounded-lg">
-                    <h3 class="font-semibold text-pink-700 mb-2">মোট চ্যাট</h3>
-                    <p id="total-chats" class="text-3xl font-bold text-pink-600">0</p>
+
+    <!-- Main Chat Container (Hidden by default) -->
+    <div id="chat-container" class="hidden w-full max-w-3xl h-[90vh] max-h-[800px] bg-white bg-opacity-20 rounded-3xl shadow-xl backdrop-blur-lg flex flex-col overflow-hidden transition-all duration-500">
+        <!-- Header with User Info and Logout -->
+        <div class="p-5 bg-white bg-opacity-30 border-b border-white border-opacity-30 flex justify-between items-center rounded-t-3xl">
+            <div class="flex items-center gap-3">
+                <img id="user-photo" src="" alt="User Photo" class="w-10 h-10 rounded-full shadow-md">
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800" id="user-name"></h1>
+                    <p class="text-sm text-gray-600">Gemini Flash দ্বারা চালিত</p>
                 </div>
             </div>
-            
-            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-                <div class="border-b p-4 bg-gray-50">
-                    <h3 class="font-semibold">ব্যবহারকারী লগ</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">নাম</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">ইমেইল</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">শেষ লগইন</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">চ্যাট সংখ্যা</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">অ্যাকশন</th>
-                            </tr>
-                        </thead>
-                        <tbody id="user-log-table" class="bg-white divide-y divide-gray-200">
-                            <!-- User logs will be added here dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <div class="flex justify-end space-x-2">
-                <button id="refresh-admin" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition">
-                    রিফ্রেশ
-                </button>
-                <button id="close-admin" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">
-                    বন্ধ করুন
-                </button>
-            </div>
+            <button id="logout-btn" class="text-gray-600 hover:text-red-500 transition-colors duration-300">
+                <i class="fas fa-sign-out-alt text-2xl"></i>
+            </button>
         </div>
-    </div>
-    
-    <!-- Main App Container -->
-    <div class="flex flex-col h-screen max-w-2xl mx-auto w-full relative bg-white shadow-lg">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-pink-500 to-pink-400 p-4 flex items-center justify-between text-white">
-            <div class="flex items-center space-x-3">
-                <button id="menu-btn" class="p-1 rounded-full hover:bg-pink-600 transition">
-                    <i data-lucide="menu"></i>
-                </button>
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                        <i data-lucide="heart" class="text-pink-500"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-bold text-lg">সোনালি</h1>
-                        <p class="text-xs opacity-80">তোমার মিষ্টি বন্ধু</p>
-                    </div>
-                </div>
-            </div>
-            <div id="admin-btn" class="hidden">
-                <button class="p-1 rounded-full hover:bg-pink-600 transition">
-                    <i data-lucide="shield"></i>
-                </button>
-            </div>
+
+        <!-- Chat Window -->
+        <div id="chat-window" class="chat-window flex-grow p-5 overflow-y-auto flex flex-col gap-4 scroll-smooth">
+            <!-- Messages will be injected here -->
         </div>
-        
-        <!-- Chat Container -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin">
-            <!-- Initial message -->
-            <div class="flex justify-start message-enter">
-                <div class="chat-bubble-ai max-w-[85%] p-3">
-                    <div class="flex items-center space-x-2 mb-1">
-                        <div class="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center">
-                            <i data-lucide="heart" class="text-pink-500 w-3 h-3"></i>
-                        </div>
-                        <span class="text-xs font-semibold text-pink-500">সোনালি</span>
-                    </div>
-                    <p class="text-sm">হাই সোনা, কেমন আছো? 😊 কথা বলা শুরু করো!</p>
-                </div>
-            </div>
-            
-            <!-- Typing indicator (hidden by default) -->
-            <div id="typing-indicator" class="flex justify-start hidden">
-                <div class="chat-bubble-ai max-w-[85%] p-3">
-                    <div class="flex items-center space-x-2 mb-1">
-                        <div class="w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center">
-                            <i data-lucide="heart" class="text-pink-500 w-3 h-3"></i>
-                        </div>
-                        <span class="text-xs font-semibold text-pink-500">সোনালি</span>
-                    </div>
-                    <div class="typing-indicator">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
+
         <!-- Input Area -->
-        <div class="p-3 border-t border-gray-100 bg-white">
-            <div class="flex items-center space-x-2">
-                <button id="image-upload-btn" class="p-2 rounded-full hover:bg-pink-50 text-pink-500 transition">
-                    <i data-lucide="image"></i>
-                    <input type="file" id="image-input" class="hidden" accept="image/*">
-                </button>
-                <input
-                    type="text"
-                    id="message-input"
-                    class="flex-1 p-3 border border-pink-200 rounded-full outline-none focus:ring-2 focus:ring-pink-300 transition text-sm"
-                    placeholder="এখানে লিখুন..."
-                />
-                <button
-                    id="send-btn"
-                    class="p-3 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition disabled:bg-pink-300 disabled:cursor-not-allowed"
-                >
-                    <i data-lucide="send"></i>
-                </button>
-            </div>
-            <div id="image-preview" class="mt-2 hidden">
-                <div class="relative inline-block">
-                    <img id="preview-image" src="#" alt="Preview" class="h-24 rounded-lg border border-pink-200">
-                    <button id="remove-image" class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full p-1 hover:bg-pink-600">
-                        <i data-lucide="x" class="w-3 h-3"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Loading Modal -->
-    <div id="loading-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-xl flex items-center space-x-3">
-            <div class="animate-spin text-pink-500">
-                <i data-lucide="loader-2"></i>
-            </div>
-            <span>প্রক্রিয়াকরণ হচ্ছে...</span>
-        </div>
-    </div>
-    
-    <!-- Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
-            <div class="text-center mb-4">
-                <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i data-lucide="heart" class="text-pink-500 w-8 h-8"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-800">সোনালিতে স্বাগতম</h3>
-                <p class="text-sm text-gray-600 mt-1">চ্যাট সংরক্ষণ করতে গুগল দিয়ে লগইন করুন</p>
-            </div>
-            <button id="google-login-btn" class="w-full bg-white border border-gray-300 rounded-lg py-2 px-4 flex items-center justify-center space-x-2 hover:bg-gray-50 transition">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" class="w-5 h-5">
-                <span>গুগল দিয়ে লগইন</span>
-            </button>
-            <button id="cancel-login-btn" class="w-full mt-2 bg-gray-100 text-gray-700 rounded-lg py-2 px-4 hover:bg-gray-200 transition">
-                পরে করব
+        <div class="input-area flex items-center p-4 bg-white bg-opacity-30 border-t border-white border-opacity-30 gap-3">
+            <input type="text" id="userInput" placeholder="আপনার প্রশ্ন এখানে লিখুন..." autocomplete="off"
+                   class="flex-grow p-4 rounded-full border border-gray-300 bg-white bg-opacity-80 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 placeholder:text-gray-500">
+            <button id="sendButton" title="পাঠান"
+                    class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl shadow-lg hover:bg-indigo-700 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
             </button>
         </div>
     </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore-compat.js"></script>
     
     <script>
-        // Firebase configuration
+        // DOM Element
+        const loginContainer = document.getElementById('login-container');
+        const chatContainer = document.getElementById('chat-container');
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const userNameEl = document.getElementById('user-name');
+        const userPhotoEl = document.getElementById('user-photo');
+        
+        let db;
+        let auth;
+        let currentUser;
+        let chatHistory = [];
+        let unsubscribeFromFirestore;
+
+        // আপনার দেওয়া Firebase কনফিগারেশন
         const firebaseConfig = {
-            apiKey: "AIzaSyCTvWKR6pt8HrHoiDHo3wqoSXtXdXJjHHQ",
-            authDomain: "priya-ai-q14sj.firebaseapp.com",
-            projectId: "priya-ai-q14sj",
-            storageBucket: "priya-ai-q14sj.appspot.com",
-            messagingSenderId: "113852032496",
-            appId: "1:113852032496:web:a6156f264323f54d9ae935"
+          apiKey: "AIzaSyCTvWKR6pt8HrHoiDHo3wqoSXtXdXJjHHQ",
+          authDomain: "priya-ai-q14sj.firebaseapp.com",
+          projectId: "priya-ai-q14sj",
+          storageBucket: "priya-ai-q14sj.firebasestorage.app",
+          messagingSenderId: "113852032496",
+          appId: "1:113852032496:web:a6156f264323f54d9ae935"
+        };
+
+        // Firebase শুরু করা
+        const app = firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        auth = firebase.auth();
+
+        // Gemini API Key
+        const geminiApiKey = "AIzaSyA0TeD-ctQp9d7EhX0ZpQcamNp02_5O6tw";
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${geminiApiKey}`;
+
+        // Google লগইন ফাংশন
+        const googleLogin = async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await auth.signInWithPopup(provider);
+            } catch (error) {
+                console.error("Google লগইন ব্যর্থ হয়েছে:", error);
+                showErrorMessage('লগইন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+            }
+        };
+
+        // লগআউট ফাংশন
+        const logout = async () => {
+            if (unsubscribeFromFirestore) {
+                unsubscribeFromFirestore();
+            }
+            await auth.signOut();
+        };
+
+        // ব্যবহারকারী লগইন অবস্থা পর্যবেক্ষণ
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                loginContainer.classList.add('hidden');
+                chatContainer.classList.remove('hidden');
+                userNameEl.textContent = user.displayName;
+                userPhotoEl.src = user.photoURL || 'https://placehold.co/40x40/f1f1f1/333?text=user';
+                loadChatHistory(user.uid);
+            } else {
+                currentUser = null;
+                loginContainer.classList.remove('hidden');
+                chatContainer.classList.add('hidden');
+            }
+        });
+
+        // চ্যাট হিস্টরি লোড করা এবং রিয়েল-টাইম আপডেট শোনা
+        const loadChatHistory = (userId) => {
+            if (unsubscribeFromFirestore) {
+                unsubscribeFromFirestore();
+            }
+
+            const messagesRef = db.collection(`artifacts/${firebaseConfig.appId}/users/${userId}/messages`);
+            const q = messagesRef.orderBy("timestamp", "asc");
+
+            unsubscribeFromFirestore = q.onSnapshot(querySnapshot => {
+                chatWindow.innerHTML = ''; // উইন্ডো খালি করা
+                chatHistory = [];
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    appendMessage(data.text, data.sender, false);
+                    chatHistory.push({ role: data.sender === 'user' ? 'user' : 'model', parts: [{ text: data.text }] });
+                });
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, error => {
+                console.error("Firestore ডেটা লোড করতে সমস্যা হয়েছে:", error);
+                showErrorMessage('চ্যাটের ইতিহাস লোড করা যায়নি।');
+            });
+        };
+
+        // মেসেজ পাঠানোর ফাংশন
+        const sendMessage = async () => {
+            const userText = userInput.value.trim();
+            if (userText === '' || !currentUser) return;
+
+            const userMessageData = {
+                text: userText,
+                sender: 'user',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                userEmail: currentUser.email,
+                userName: currentUser.displayName
+            };
+
+            await addMessageToFirestore(userMessageData);
+            
+            userInput.value = '';
+            appendLoadingIndicator();
+            
+            try {
+                chatHistory.push({ role: "user", parts: [{ text: userText }] });
+
+                const payload = { contents: chatHistory };
+                const response = await fetchWithRetry(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                removeLoadingIndicator();
+
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates.length > 0 && data.candidates[0].content && data.candidates[0].content.parts) {
+                    const aiText = data.candidates[0].content.parts[0].text;
+                    const aiMessageData = {
+                        text: aiText,
+                        sender: 'model',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    await addMessageToFirestore(aiMessageData);
+                    chatHistory.push({ role: "model", parts: [{ text: aiText }] });
+                } else {
+                    showErrorMessage('দুঃখিত, এই প্রশ্নের উত্তর দেওয়া সম্ভব হচ্ছে না। অন্য কিছু চেষ্টা করুন।');
+                    chatHistory.pop();
+                }
+            } catch (error) {
+                console.error('AI Response পেতে সমস্যা হয়েছে:', error);
+                removeLoadingIndicator();
+                showErrorMessage(`দুঃখিত, একটি সমস্যা হয়েছে। অনুগ্রহ করে ইন্টারনেট সংযোগ পরীক্ষা করুন। <br><small>Error: ${error.message}</small>`);
+            }
+        };
+
+        // Firestore-এ মেসেজ যুক্ত করা
+        const addMessageToFirestore = async (messageData) => {
+            if (!currentUser) return;
+            try {
+                const messagesRef = db.collection(`artifacts/${firebaseConfig.appId}/users/${currentUser.uid}/messages`);
+                await messagesRef.add(messageData);
+            } catch (error) {
+                console.error("Firestore-এ মেসেজ যুক্ত করতে সমস্যা হয়েছে:", error);
+                showErrorMessage('মেসেজ সংরক্ষণ করা যায়নি।');
+            }
+        };
+
+        // Exponential Backoff retry mechanism
+        const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response;
+            } catch (error) {
+                if (retries > 0) {
+                    console.error(`Fetch failed, retrying in ${delay}ms...`, error);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithRetry(url, options, retries - 1, delay * 2);
+                } else {
+                    throw error;
+                }
+            }
+        };
+
+        // চ্যাট উইন্ডোতে মেসেজ যুক্ত করার ফাংশন
+        const appendMessage = (text, sender, isNewMessage = true) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'p-4', 'rounded-3xl', 'max-w-[85%]', 'shadow-lg', 'transition-all', 'duration-300', 'transform', 'hover:scale-105');
+            
+            let messageContent = text;
+            if (sender === 'user') {
+                messageDiv.classList.add('self-end', 'bg-indigo-600', 'text-white', 'rounded-br-lg');
+            } else {
+                messageDiv.classList.add('self-start', 'bg-white', 'text-gray-800', 'rounded-bl-lg', 'flex', 'flex-col', 'items-start', 'gap-2');
+                const avatarDiv = document.createElement('div');
+                avatarDiv.classList.add('flex', 'items-center', 'gap-2', 'mb-2');
+                avatarDiv.innerHTML = `<span class="text-2xl text-indigo-500">🤖</span><span class="font-semibold">এআই বন্ধু</span>`;
+                messageDiv.appendChild(avatarDiv);
+
+                // সুন্দর করে রিপ্লাই সাজানো
+                messageContent = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+                messageContent = messageContent.replace(/\*(.*?)\*/g, '<em>$1</em>'); // Italic
+                messageContent = messageContent.replace(/^- (.*)$/gm, '<li class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i><span>$1</span></li>');
+                messageContent = `<ul>${messageContent}</ul>`;
+                
+                // নতুন লাইনের জন্য <br>
+                messageContent = messageContent.replace(/\n/g, '<br>');
+                messageContent = messageContent.replace(/<\/ul><br>/g, '</ul>'); // বুলেটের পর অতিরিক্ত <br> সরানো
+            }
+
+            const textDiv = document.createElement('div');
+            textDiv.innerHTML = messageContent;
+            messageDiv.appendChild(textDiv);
+            chatWindow.appendChild(messageDiv);
+
+            if (isNewMessage) {
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
         };
         
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const storage = firebase.storage();
-        
-        // Google provider
-        const provider = new firebase.auth.GoogleAuthProvider();
-        
-        // Gemini API Key (Note: In production, this should be handled server-side)
-        const GEMINI_API_KEY = "AIzaSyBPT-7inNDExjDwVCAsi5buULt10ORnvdE";
-        
-        // DOM elements
-        const menuBtn = document.getElementById('menu-btn');
-        const closeSidebarBtn = document.getElementById('close-sidebar');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const newChatBtn = document.getElementById('new-chat-btn');
-        const chatHistory = document.getElementById('chat-history');
-        const loginBtn = document.getElementById('login-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const userInfo = document.getElementById('user-info');
-        const userAvatar = document.getElementById('user-avatar');
-        const userName = document.getElementById('user-name');
-        const chatContainer = document.getElementById('chat-container');
-        const messageInput = document.getElementById('message-input');
-        const sendBtn = document.getElementById('send-btn');
-        const imageInput = document.getElementById('image-input');
-        const imageUploadBtn = document.getElementById('image-upload-btn');
-        const imagePreview = document.getElementById('image-preview');
-        const previewImage = document.getElementById('preview-image');
-        const removeImageBtn = document.getElementById('remove-image');
-        const loadingModal = document.getElementById('loading-modal');
-        const typingIndicator = document.getElementById('typing-indicator');
-        const loginModal = document.getElementById('login-modal');
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        const cancelLoginBtn = document.getElementById('cancel-login-btn');
-        const adminBtn = document.getElementById('admin-btn');
-        const adminPanel = document.getElementById('admin-panel');
-        const closeAdminBtn = document.getElementById('close-admin');
-        const refreshAdminBtn = document.getElementById('refresh-admin');
-        const userLogTable = document.getElementById('user-log-table');
-        const activeUsersCount = document.getElementById('active-users');
-        const todayChatsCount = document.getElementById('today-chats');
-        const totalChatsCount = document.getElementById('total-chats');
-        
-        // State variables
-        let currentUser = null;
-        let currentChatId = null;
-        let imageFile = null;
-        let isAdmin = false;
-        
-        // Admin email (replace with your admin email)
-        const ADMIN_EMAIL = "smartwork19999@gmail.com";
-        
-        // Initialize Lucide icons
-        lucide.createIcons();
-        
-        // Event listeners
-        menuBtn.addEventListener('click', toggleSidebar);
-        closeSidebarBtn.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
-        newChatBtn.addEventListener('click', startNewChat);
-        sendBtn.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !sendBtn.disabled) {
+        // লোডিং অ্যানিমেশন দেখানোর ফাংশন
+        const appendLoadingIndicator = () => {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading-indicator';
+            loadingDiv.classList.add('message', 'self-start', 'bg-white', 'text-gray-800', 'p-4', 'rounded-3xl', 'rounded-bl-lg', 'max-w-[85%]', 'shadow-lg', 'flex', 'items-center', 'gap-2');
+            loadingDiv.innerHTML = `<span class="text-2xl text-indigo-500">🤖</span><div class="loading-dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>`;
+            chatWindow.appendChild(loadingDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            sendButton.disabled = true;
+            userInput.disabled = true;
+        };
+
+        // লোডিং অ্যানিমেশন সরানোর ফাংশন
+        const removeLoadingIndicator = () => {
+            const indicator = document.getElementById('loading-indicator');
+            if (indicator) indicator.remove();
+            sendButton.disabled = false;
+            userInput.disabled = false;
+            userInput.focus();
+        };
+
+        // ইউআই-তে ত্রুটি বার্তা দেখানো
+        const showErrorMessage = (message) => {
+            const errorDiv = document.createElement('div');
+            errorDiv.classList.add('message', 'self-start', 'bg-red-500', 'text-white', 'p-3', 'rounded-2xl', 'rounded-bl-none', 'max-w-[85%]', 'shadow-md');
+            errorDiv.innerHTML = `<span class="text-2xl mr-2">❌</span>${message}`;
+            chatWindow.appendChild(errorDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        };
+
+        // ইভেন্ট লিসেনার
+        googleLoginBtn.addEventListener('click', googleLogin);
+        logoutBtn.addEventListener('click', logout);
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !sendButton.disabled) {
                 sendMessage();
             }
         });
-        imageUploadBtn.addEventListener('click', () => imageInput.click());
-        imageInput.addEventListener('change', handleImageUpload);
-        removeImageBtn.addEventListener('click', removeImage);
-        loginBtn.addEventListener('click', showLoginModal);
-        logoutBtn.addEventListener('click', signOut);
-        googleLoginBtn.addEventListener('click', signInWithGoogle);
-        cancelLoginBtn.addEventListener('click', hideLoginModal);
-        adminBtn.addEventListener('click', showAdminPanel);
-        closeAdminBtn.addEventListener('click', hideAdminPanel);
-        refreshAdminBtn.addEventListener('click', loadAdminData);
-        
-        // Initialize the app
-        initApp();
-        
-        // Functions
-        function initApp() {
-            // Check auth state
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    currentUser = user;
-                    updateUserUI(user);
-                    checkAdminStatus(user);
-                    loadChatHistory(user.uid);
-                    
-                    // Create a new chat if none exists
-                    if (!currentChatId) {
-                        startNewChat();
-                    }
-                } else {
-                    currentUser = null;
-                    updateUserUI(null);
-                    showLoginModal();
-                }
-            });
-        }
-        
-        function toggleSidebar() {
-            sidebar.classList.toggle('sidebar-open');
-            sidebarOverlay.classList.toggle('hidden');
-        }
-        
-        function showLoginModal() {
-            loginModal.classList.remove('hidden');
-        }
-        
-        function hideLoginModal() {
-            loginModal.classList.add('hidden');
-        }
-        
-        function showAdminPanel() {
-            loadAdminData();
-            adminPanel.classList.remove('hidden');
-        }
-        
-        function hideAdminPanel() {
-            adminPanel.classList.add('hidden');
-        }
-        
-        function signInWithGoogle() {
-            hideLoginModal();
-            toggleLoading(true);
-            
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    const user = result.user;
-                    currentUser = user;
-                    updateUserUI(user);
-                    checkAdminStatus(user);
-                    loadChatHistory(user.uid);
-                    startNewChat();
-                })
-                .catch((error) => {
-                    console.error('Login error:', error);
-                    appendMessage('ai', 'লগইনে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।');
-                })
-                .finally(() => {
-                    toggleLoading(false);
-                });
-        }
-        
-        function signOut() {
-            toggleLoading(true);
-            auth.signOut()
-                .then(() => {
-                    currentUser = null;
-                    updateUserUI(null);
-                    clearChatHistory();
-                    startNewChat();
-                })
-                .catch((error) => {
-                    console.error('Logout error:', error);
-                })
-                .finally(() => {
-                    toggleLoading(false);
-                });
-        }
-        
-        function checkAdminStatus(user) {
-            if (user.email === ADMIN_EMAIL) {
-                isAdmin = true;
-                adminBtn.classList.remove('hidden');
-            } else {
-                isAdmin = false;
-                adminBtn.classList.add('hidden');
-            }
-        }
-        
-        function updateUserUI(user) {
-            if (user) {
-                // User is logged in
-                userName.textContent = user.displayName || 'ব্যবহারকারী';
-                
-                if (user.photoURL) {
-                    userAvatar.innerHTML = `<img src="${user.photoURL}" alt="User" class="w-full h-full rounded-full">`;
-                } else {
-                    userAvatar.innerHTML = '<i data-lucide="user" class="text-pink-500"></i>';
-                }
-                
-                loginBtn.classList.add('hidden');
-                logoutBtn.classList.remove('hidden');
-            } else {
-                // User is not logged in
-                userName.textContent = 'লগইন করুন';
-                userAvatar.innerHTML = '<i data-lucide="user" class="text-gray-500"></i>';
-                loginBtn.classList.remove('hidden');
-                logoutBtn.classList.add('hidden');
-            }
-            
-            // Refresh icons
-            lucide.createIcons();
-        }
-        
-        function startNewChat() {
-            if (currentUser) {
-                // Create a new chat document in Firestore
-                const newChatRef = db.collection('users').doc(currentUser.uid).collection('chats').doc();
-                currentChatId = newChatRef.id;
-                
-                // Initialize with empty messages array
-                newChatRef.set({
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    messages: []
-                })
-                .then(() => {
-                    // Clear the chat container
-                    chatContainer.innerHTML = '';
-                    
-                    // Add initial AI message
-                    appendMessage('ai', 'হাই সোনা, কেমন আছো? 😊 কথা বলা শুরু করো!');
-                    
-                    // Update chat history
-                    loadChatHistory(currentUser.uid);
-                })
-                .catch((error) => {
-                    console.error('Error creating new chat:', error);
-                });
-            } else {
-                // If not logged in, just clear the chat
-                currentChatId = null;
-                chatContainer.innerHTML = '';
-                appendMessage('ai', 'হাই সোনা, কেমন আছো? 😊 কথা বলা শুরু করো!');
-            }
-        }
-        
-        function loadChatHistory(userId) {
-            if (!userId) {
-                chatHistory.innerHTML = '<p class="text-sm text-gray-500 px-2 py-1">লগইন করে আপনার চ্যাট ইতিহাস দেখুন</p>';
-                return;
-            }
-            
-            chatHistory.innerHTML = '<div class="flex justify-center py-2"><i data-lucide="loader-2" class="animate-spin text-pink-500"></i></div>';
-            
-            db.collection('users').doc(userId).collection('chats')
-                .orderBy('updatedAt', 'desc')
-                .limit(10)
-                .get()
-                .then((querySnapshot) => {
-                    if (querySnapshot.empty) {
-                        chatHistory.innerHTML = '<p class="text-sm text-gray-500 px-2 py-1">কোন চ্যাট ইতিহাস নেই</p>';
-                        return;
-                    }
-                    
-                    chatHistory.innerHTML = '';
-                    
-                    querySnapshot.forEach((doc) => {
-                        const chat = doc.data();
-                        const chatId = doc.id;
-                        const lastMessage = chat.messages && chat.messages.length > 0 
-                            ? chat.messages[chat.messages.length - 1].text 
-                            : 'কোন বার্তা নেই';
-                        
-                        const chatElement = document.createElement('div');
-                        chatElement.className = `px-2 py-1 rounded-lg cursor-pointer hover:bg-pink-50 ${chatId === currentChatId ? 'bg-pink-100' : ''}`;
-                        chatElement.innerHTML = `
-                            <div class="flex items-center justify-between">
-                                <p class="text-sm truncate">${lastMessage.substring(0, 30)}${lastMessage.length > 30 ? '...' : ''}</p>
-                                <span class="text-xs text-gray-500">${formatDate(chat.updatedAt?.toDate())}</span>
-                            </div>
-                        `;
-                        
-                        chatElement.addEventListener('click', () => {
-                            loadChat(chatId, userId);
-                        });
-                        
-                        chatHistory.appendChild(chatElement);
-                    });
-                    
-                    // Refresh icons
-                    lucide.createIcons();
-                })
-                .catch((error) => {
-                    console.error('Error loading chat history:', error);
-                    chatHistory.innerHTML = '<p class="text-sm text-gray-500 px-2 py-1">চ্যাট ইতিহাস লোড করতে সমস্যা হয়েছে</p>';
-                });
-        }
-        
-        function loadChat(chatId, userId) {
-            toggleLoading(true);
-            currentChatId = chatId;
-            
-            db.collection('users').doc(userId).collection('chats').doc(chatId)
-                .get()
-                .then((doc) => {
-                    if (!doc.exists) {
-                        throw new Error('Chat not found');
-                    }
-                    
-                    const chat = doc.data();
-                    chatContainer.innerHTML = '';
-                    
-                    if (chat.messages && chat.messages.length > 0) {
-                        chat.messages.forEach((message) => {
-                            appendMessage(message.role, message.text, message.imageUrl);
-                        });
-                    } else {
-                        appendMessage('ai', 'হাই সোনা, কেমন আছো? 😊 কথা বলা শুরু করো!');
-                    }
-                    
-                    // Update chat history UI
-                    loadChatHistory(userId);
-                })
-                .catch((error) => {
-                    console.error('Error loading chat:', error);
-                    appendMessage('ai', 'চ্যাট লোড করতে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।');
-                })
-                .finally(() => {
-                    toggleLoading(false);
-                });
-        }
-        
-        function clearChatHistory() {
-            chatHistory.innerHTML = '<p class="text-sm text-gray-500 px-2 py-1">লগইন করে আপনার চ্যাট ইতিহাস দেখুন</p>';
-        }
-        
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                imageFile = file;
-                
-                // Show preview
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    previewImage.src = e.target.result;
-                    imagePreview.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        function removeImage() {
-            imageFile = null;
-            imageInput.value = '';
-            imagePreview.classList.add('hidden');
-        }
-        
-        async function sendMessage() {
-            const messageText = messageInput.value.trim();
-            
-            // Don't send if both text and image are empty
-            if (!messageText && !imageFile) return;
-            
-            // Show user's message immediately
-            appendMessage('user', messageText, imageFile ? URL.createObjectURL(imageFile) : null);
-            
-            // Clear input
-            messageInput.value = '';
-            removeImage();
-            
-            // Show typing indicator
-            typingIndicator.classList.remove('hidden');
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            
-            try {
-                // Prepare payload for Gemini API
-                const payloadParts = [];
-                
-                // Add persona prompt and user's text message
-                payloadParts.push({
-                    text: `তুমি আমার খুব মিষ্টি একটা গার্লফ্রেন্ড। তোমার উত্তরগুলো হবে খুব ছোট, মিষ্টি আর ভালোবাসার ইমোজি দিয়ে ভরা। বাংলায় কথা বলবে। যখন আমি একটি ছবি আপলোড করবো, সেটিরও মিষ্টি করে বর্ণনা দেবে। তোমার নাম সোনালি। user: ${messageText}`,
-                });
-                
-                // If an image is present, convert it to Base64 and add to payload
-                let imageUrl = null;
-                if (imageFile) {
-                    // Upload image to Firebase Storage if user is logged in
-                    if (currentUser) {
-                        const storageRef = storage.ref(`users/${currentUser.uid}/images/${Date.now()}`);
-                        const snapshot = await storageRef.put(imageFile);
-                        imageUrl = await snapshot.ref.getDownloadURL();
-                    }
-                    
-                    const base64ImageData = await toBase64(imageFile);
-                    payloadParts.push({
-                        inlineData: {
-                            mimeType: imageFile.type,
-                            data: base64ImageData
-                        }
-                    });
-                }
-                
-                const payload = {
-                    contents: [{
-                        role: 'user',
-                        parts: payloadParts,
-                    }],
-                };
-                
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`;
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('Gemini API Error Response:', errorData);
-                    throw new Error(`API error: ${errorData.error.message || 'Unknown error'}`);
-                }
-                
-                const result = await response.json();
-                
-                // Get AI response text
-                let aiText = 'দুঃখিত সোনা, আমি এই মুহূর্তে উত্তর দিতে পারছি না। 😢';
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    aiText = result.candidates[0].content.parts[0].text;
-                }
-                
-                // Save the conversation to Firestore if user is logged in
-                if (currentUser && currentChatId) {
-                    const messageData = {
-                        role: 'user',
-                        text: messageText,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-                    
-                    if (imageUrl) {
-                        messageData.imageUrl = imageUrl;
-                    }
-                    
-                    // Add user message
-                    await db.collection('users').doc(currentUser.uid).collection('chats').doc(currentChatId)
-                        .update({
-                            messages: firebase.firestore.FieldValue.arrayUnion(messageData),
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    
-                    // Add AI response
-                    await db.collection('users').doc(currentUser.uid).collection('chats').doc(currentChatId)
-                        .update({
-                            messages: firebase.firestore.FieldValue.arrayUnion({
-                                role: 'ai',
-                                text: aiText,
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                            }),
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                }
-                
-                // Show AI response
-                appendMessage('ai', aiText);
-                
-            } catch (error) {
-                console.error('Error in sendMessage:', error);
-                appendMessage('ai', 'সোনা, কিছু একটা ভুল হয়েছে। ইন্টারনেটের সংযোগ পরীক্ষা করো অথবা পরে আবার চেষ্টা করো। 😔');
-            } finally {
-                // Hide typing indicator
-                typingIndicator.classList.add('hidden');
-                
-                // Scroll to bottom
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-        }
-        
-        function appendMessage(role, text, imageUrl = null) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} message-enter`;
-            
-            const bubbleClass = role === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai';
-            const bubbleDiv = document.createElement('div');
-            bubbleDiv.className = `${bubbleClass} max-w-[85%] p-3`;
-            
-            // Add AI info for AI messages
-            if (role === 'ai') {
-                const aiInfoDiv = document.createElement('div');
-                aiInfoDiv.className = "flex items-center space-x-2 mb-1";
-                
-                const aiIcon = document.createElement('div');
-                aiIcon.className = "w-6 h-6 rounded-full bg-pink-100 flex items-center justify-center";
-                aiIcon.innerHTML = '<i data-lucide="heart" class="text-pink-500 w-3 h-3"></i>';
-                aiInfoDiv.appendChild(aiIcon);
-                
-                const aiName = document.createElement('span');
-                aiName.className = "text-xs font-semibold text-pink-500";
-                aiName.textContent = "সোনালি";
-                aiInfoDiv.appendChild(aiName);
-                
-                bubbleDiv.appendChild(aiInfoDiv);
-            }
-            
-            // Add image if present
-            if (imageUrl) {
-                const imgDiv = document.createElement('div');
-                imgDiv.className = "mb-2";
-                
-                const img = document.createElement('img');
-                img.src = imageUrl;
-                img.alt = "Attached image";
-                img.className = "rounded-lg max-h-48 w-full object-cover border border-pink-100";
-                
-                imgDiv.appendChild(img);
-                bubbleDiv.appendChild(imgDiv);
-            }
-            
-            // Add message text
-            const textDiv = document.createElement('p');
-            textDiv.className = "text-sm whitespace-pre-wrap";
-            textDiv.textContent = text;
-            bubbleDiv.appendChild(textDiv);
-            
-            messageDiv.appendChild(bubbleDiv);
-            chatContainer.appendChild(messageDiv);
-            
-            // Scroll to bottom
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            
-            // Refresh icons
-            lucide.createIcons();
-        }
-        
-        function toggleLoading(show) {
-            if (show) {
-                loadingModal.classList.remove('hidden');
-                sendBtn.disabled = true;
-                messageInput.disabled = true;
-            } else {
-                loadingModal.classList.add('hidden');
-                sendBtn.disabled = false;
-                messageInput.disabled = false;
-            }
-        }
-        
-        function toBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = (error) => reject(error);
-            });
-        }
-        
-        function formatDate(date) {
-            if (!date) return '';
-            
-            const now = new Date();
-            const diffInHours = (now - date) / (1000 * 60 * 60);
-            
-            if (diffInHours < 24) {
-                return date.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' });
-            } else {
-                return date.toLocaleDateString('bn-BD', { month: 'short', day: 'numeric' });
-            }
-        }
-        
-        async function loadAdminData() {
-            if (!isAdmin) return;
-            
-            toggleLoading(true);
-            
-            try {
-                // Get active users count (users who signed in last 30 days)
-                const activeUsersQuery = await db.collection('users')
-                    .where('lastLogin', '>=', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
-                    .get();
-                
-                activeUsersCount.textContent = activeUsersQuery.size;
-                
-                // Get today's chats count
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                const todayChatsQuery = await db.collectionGroup('chats')
-                    .where('updatedAt', '>=', today)
-                    .get();
-                
-                todayChatsCount.textContent = todayChatsQuery.size;
-                
-                // Get total chats count
-                const totalChatsQuery = await db.collectionGroup('chats').get();
-                totalChatsCount.textContent = totalChatsQuery.size;
-                
-                // Get user logs
-                const usersQuery = await db.collection('users').orderBy('lastLogin', 'desc').get();
-                
-                userLogTable.innerHTML = '';
-                
-                usersQuery.forEach((doc) => {
-                    const user = doc.data();
-                    const row = document.createElement('tr');
-                    
-                    // Count user's chats
-                    const chatCount = user.chatCount || 0;
-                    
-                    row.innerHTML = `
-                        <td class="px-4 py-2 text-sm">${user.displayName || 'ব্যবহারকারী'}</td>
-                        <td class="px-4 py-2 text-sm">${user.email || 'N/A'}</td>
-                        <td class="px-4 py-2 text-sm">${user.lastLogin ? formatAdminDate(user.lastLogin.toDate()) : 'কখনো না'}</td>
-                        <td class="px-4 py-2 text-sm">${chatCount}</td>
-                        <td class="px-4 py-2 text-sm">
-                            <button class="text-red-500 hover:text-red-700 delete-user" data-uid="${doc.id}">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </td>
-                    `;
-                    
-                    userLogTable.appendChild(row);
-                });
-                
-                // Add event listeners to delete buttons
-                document.querySelectorAll('.delete-user').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const userId = e.target.closest('button').getAttribute('data-uid');
-                        deleteUser(userId);
-                    });
-                });
-                
-                // Refresh icons
-                lucide.createIcons();
-                
-            } catch (error) {
-                console.error('Error loading admin data:', error);
-            } finally {
-                toggleLoading(false);
-            }
-        }
-        
-        function formatAdminDate(date) {
-            if (!date) return '';
-            return date.toLocaleString('bn-BD');
-        }
-        
-        async function deleteUser(userId) {
-            if (!confirm('আপনি কি নিশ্চিত এই ব্যবহারকারীকে ডিলিট করতে চান? এটি সমস্ত ডাটা মুছে ফেলবে।')) {
-                return;
-            }
-            
-            toggleLoading(true);
-            
-            try {
-                // Delete user's chats
-                const chatsQuery = await db.collection('users').doc(userId).collection('chats').get();
-                const batch = db.batch();
-                
-                chatsQuery.forEach(doc => {
-                    batch.delete(doc.ref);
-                });
-                
-                await batch.commit();
-                
-                // Delete user document
-                await db.collection('users').doc(userId).delete();
-                
-                // Refresh admin data
-                loadAdminData();
-                
-            } catch (error) {
-                console.error('Error deleting user:', error);
-                alert('ব্যবহারকারী ডিলিট করতে সমস্যা হয়েছে।');
-            } finally {
-                toggleLoading(false);
-            }
-        }
+
     </script>
 </body>
 </html>
