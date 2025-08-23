@@ -3,369 +3,757 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আমার এআই বন্ধু</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" xintegrity="sha512-z3gLpd7yXhW8Lq9d3e8j5Tf5tA9r1s2c/6Fm+j6V+G4k/7Qv1Cj8yv6E6S3GzGz5Sg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>আমার পরীক্ষার রুটিন</title>
+    <!-- Google Fonts for a clean, professional Bengali font -->
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* ফন্ট ইম্পোর্ট */
-        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        /* CSS variables for a modern, purple and blue theme */
+        :root {
+            --primary-color: #6a0572;
+            --secondary-color: #a540b6;
+            --background-gradient: linear-gradient(135deg, #f0eafb 0%, #d8e5f2 100%);
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --light-text-color: #888888;
+            --border-radius: 16px;
+            --box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.4s ease;
+        }
 
-        /* কাস্টম স্টাইল */
         body {
-            font-family: 'Hind Siliguri', sans-serif;
-            background: linear-gradient(135deg, #1d2b64, #f8cdda);
+            font-family: 'Tiro Bangla', sans-serif;
+            background: var(--background-gradient);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            margin-bottom: 30px;
         }
         
-        .chat-window::-webkit-scrollbar {
-            width: 8px;
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            position: relative;
         }
-        .chat-window::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
+
+        .header-section h1 {
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
         }
-        .chat-window::-webkit-scrollbar-thumb {
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
+
+        .header-section .today-btn {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+            text-decoration: none;
+            font-family: inherit;
         }
-        .loading-dots span {
-            height: 10px;
-            width: 10px;
-            margin: 0 2px;
-            background-color: #fff;
+        
+        .header-section .today-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: var(--light-text-color);
+            margin-bottom: 25px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+
+        .schedule-table th, .schedule-table td {
+            padding: 18px;
+            border: none;
+            background-color: #f7f3ff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all var(--transition-speed);
+            border-radius: var(--border-radius);
+            text-align: left;
+        }
+
+        .schedule-table thead th {
+            background-color: var(--primary-color);
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .schedule-table thead th:first-child { border-top-left-radius: var(--border-radius); border-bottom-left-radius: var(--border-radius); }
+        .schedule-table thead th:last-child { border-top-right-radius: var(--border-radius); border-bottom-right-radius: var(--border-radius); }
+
+        .schedule-table tbody tr {
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .schedule-table tbody tr:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .schedule-table td:nth-child(1) { font-weight: bold; color: var(--primary-color); }
+        .schedule-table td:nth-child(2) { color: var(--secondary-color); font-style: italic; }
+        .schedule-table td:nth-child(3) ul { list-style: none; padding: 0; margin: 0; }
+        .schedule-table td:nth-child(3) ul li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .custom-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .custom-checkbox:hover { border-color: var(--secondary-color); }
+        .custom-checkbox.completed { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .custom-checkbox.completed::after {
+            content: "✓";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .exam-row td {
+            background-color: #fff0f0 !important;
+            border: 2px solid #ff4d4f;
+            box-shadow: 0 4px 12px rgba(255, 77, 79, 0.2);
+        }
+
+        .week-summary {
+            padding: 20px;
+            margin-top: 10px;
+            background-color: #f0f4f8;
+            border-radius: var(--border-radius);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .week-summary h3 {
+            font-size: 1.5em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .summary-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .summary-list li {
+            background-color: #e5eaf5;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        /* Full page modal for today's routine */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            animation: fadeIn 0.5s ease-out;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .modal-content {
+            background-color: var(--card-background);
+            margin: 0; /* Changed from 5% auto */
+            padding: 30px;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 2em;
+        }
+
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .date-navigation button {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
             border-radius: 50%;
-            display: inline-block;
-            animation: bounce 1.4s infinite ease-in-out both;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.5em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color var(--transition-speed);
         }
-        .loading-dots .dot1 { animation-delay: -0.32s; }
-        .loading-dots .dot2 { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1.0); }
+
+        .date-navigation button:hover:not(:disabled) {
+            background-color: var(--secondary-color);
         }
-        /* বুলেট পয়েন্টের জন্য স্টাইল */
-        .ai-message ul {
-            list-style-type: disc;
-            padding-left: 2em;
-            margin-top: 0.5em;
+
+        .date-navigation button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
-        .ai-message ol {
-            list-style-type: decimal;
-            padding-left: 2em;
-            margin-top: 0.5em;
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2.5em;
+            cursor: pointer;
+            color: var(--text-color);
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
-        .ai-message li {
-            margin-bottom: 0.5em;
+
+        .daily-schedule-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 15px; /* for scrollbar */
+        }
+
+        .daily-schedule-item {
+            background-color: #f7f3ff;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .daily-schedule-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .daily-schedule-item h3 {
+            font-size: 1.5em;
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .daily-schedule-item textarea {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Tiro Bangla', sans-serif;
+            font-size: 1em;
+            resize: vertical;
+            margin-top: 10px;
+            background-color: #fff;
+            transition: border-color 0.3s ease;
+        }
+
+        .daily-schedule-item textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(106, 5, 114, 0.2);
+        }
+
+        .no-routine-message {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.5em;
+            color: var(--light-text-color);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        /* Responsive design for small screens */
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .schedule-table, .schedule-table thead, .schedule-table tbody, .schedule-table th, .schedule-table td, .schedule-table tr {
+                display: block;
+                width: 100%;
+            }
+            .schedule-table thead { display: none; }
+            .schedule-table tr { margin-bottom: 20px; }
+            .schedule-table td {
+                text-align: right;
+                position: relative;
+                padding-left: 50%;
+                border-radius: 0;
+                box-shadow: none;
+                background-color: #f0f4f8;
+            }
+            .schedule-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+                color: var(--primary-color);
+            }
+            .week-summary { text-align: left; }
+            .summary-list { justify-content: flex-start; }
+            .summary-list li { width: 100%; }
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <!-- Login Container -->
-    <div id="login-container" class="flex flex-col items-center justify-center text-center p-8 bg-white bg-opacity-20 rounded-3xl shadow-xl backdrop-blur-lg transition-all duration-500 w-full max-w-sm">
-        <h1 class="text-3xl font-bold text-white mb-4">স্বাগতম!</h1>
-        <p class="text-white text-lg mb-6">চ্যাট শুরু করতে Google দিয়ে লগইন করুন।</p>
-        <button id="google-login-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 flex items-center gap-2">
-            <i class="fab fa-google"></i>
-            <span>Google দিয়ে লগইন করুন</span>
-        </button>
+<!-- Main Page Content -->
+<div class="container">
+    <div class="header-section">
+        <h1 class="main-title">আমার পরীক্ষার রুটিন</h1>
+        <button class="today-btn" id="show-today-btn">আজকের রুটিন</button>
     </div>
-
-    <!-- Main Chat Container (Hidden by default) -->
-    <div id="chat-container" class="hidden w-full max-w-3xl h-[90vh] max-h-[800px] bg-white bg-opacity-20 rounded-3xl shadow-xl backdrop-blur-lg flex flex-col overflow-hidden transition-all duration-500">
-        <!-- Header with User Info and Logout -->
-        <div class="p-5 bg-white bg-opacity-30 border-b border-white border-opacity-30 flex justify-between items-center rounded-t-3xl">
-            <div class="flex items-center gap-3">
-                <img id="user-photo" src="" alt="User Photo" class="w-10 h-10 rounded-full shadow-md">
-                <div>
-                    <h1 class="text-lg font-bold text-gray-800" id="user-name"></h1>
-                    <p class="text-sm text-gray-600">Gemini Flash দ্বারা চালিত</p>
-                </div>
-            </div>
-            <button id="logout-btn" class="text-gray-600 hover:text-red-500 transition-colors duration-300">
-                <i class="fas fa-sign-out-alt text-2xl"></i>
-            </button>
-        </div>
-
-        <!-- Chat Window -->
-        <div id="chat-window" class="chat-window flex-grow p-5 overflow-y-auto flex flex-col gap-4 scroll-smooth">
-            <!-- Messages will be injected here -->
-        </div>
-
-        <!-- Input Area -->
-        <div class="input-area flex items-center p-4 bg-white bg-opacity-30 border-t border-white border-opacity-30 gap-3">
-            <input type="text" id="userInput" placeholder="আপনার প্রশ্ন এখানে লিখুন..." autocomplete="off"
-                   class="flex-grow p-4 rounded-full border border-gray-300 bg-white bg-opacity-80 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 placeholder:text-gray-500">
-            <button id="sendButton" title="পাঠান"
-                    class="w-12 h-12 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl shadow-lg hover:bg-indigo-700 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-            </button>
-        </div>
-    </div>
-
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore-compat.js"></script>
+    <p class="subtitle">আপনার পরীক্ষার প্রস্তুতির সুন্দর ও সুসংগঠিত তালিকা</p>
     
-    <script>
-        // DOM Element
-        const loginContainer = document.getElementById('login-container');
-        const chatContainer = document.getElementById('chat-container');
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const chatWindow = document.getElementById('chat-window');
-        const userInput = document.getElementById('userInput');
-        const sendButton = document.getElementById('sendButton');
-        const userNameEl = document.getElementById('user-name');
-        const userPhotoEl = document.getElementById('user-photo');
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th>তারিখ</th>
+                <th>দিন</th>
+                <th>বিষয়সমূহ</th>
+            </tr>
+        </thead>
+        <tbody id="schedule-body">
+            <!-- Table rows and weekly summaries will be dynamically inserted here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- The Modal for Today's Routine -->
+<div id="todayModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="date-navigation">
+                <button id="prev-date-btn">&lt;</button>
+                <h2 id="modal-date"></h2>
+                <button id="next-date-btn">&gt;</button>
+            </div>
+            <button class="close-btn" id="close-modal-btn">হোম</button>
+        </div>
+        <div id="daily-schedule-content" class="daily-schedule-content">
+            <!-- Daily schedule with notes and checkboxes will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Corrected schedule data with English date format for easier parsing
+    const scheduleData = [
+        { date: "August 24, 2025", day: "রবিবার", subjects: ["ইংরেজি (২য় পত্র)", "তথ্য ও যোগাযোগ প্রযুক্তি", "পদার্থবিজ্ঞান (২য় পত্র)", "রসায়ন (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 1 },
+        { date: "August 25, 2025", day: "সোমবার", subjects: ["বাংলা (২য় পত্র)", "তথ্য ও যোগাযোগ প্রযুক্তি", "জীববিজ্ঞান (২য় পত্র)", "রসায়ন (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 1 },
+        { date: "August 26, 2025", day: "মঙ্গলবার", subjects: ["বাংলা (২য় পত্র)", "ইংরেজি (২য় পত্র)", "পদার্থবিজ্ঞান (২য় পত্র)", "জীববিজ্ঞান (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 1 },
+        { date: "August 27, 2025", day: "বুধবার", subjects: ["ইংরেজি (২য় পত্র)", "বাংলা (২য় পত্র)", "পদার্থবিজ্ঞান (২য় পত্র)", "রসায়ন (২য় পত্র)", "জীববিজ্ঞান (২য় পত্র)"], week: 1 },
+        { date: "August 28, 2025", day: "বৃহস্পতিবার", subjects: ["ইংরেজি (২য় পত্র)", "তথ্য ও যোগাযোগ প্রযুক্তি", "রসায়ন (২য় পত্র)", "জীববিজ্ঞান (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 1 },
+        { date: "August 29, 2025", day: "শুক্রবার", subjects: ["সার্বিক রিভিশন"], week: 1 },
+        { date: "August 30, 2025", day: "শনিবার", subjects: ["তথ্য ও যোগাযোগ প্রযুক্তি", "বাংলা (২য় পত্র)", "পদার্থবিজ্ঞান (২য় পত্র)", "রসায়ন (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 1 },
         
-        let db;
-        let auth;
-        let currentUser;
-        let chatHistory = [];
-        let unsubscribeFromFirestore;
+        { date: "August 31, 2025", day: "রবিবার", subjects: ["ইংরেজি (২য় পত্র)", "জীববিজ্ঞান (২য় পত্র)", "রসায়ন (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 2 },
+        { date: "September 1, 2025", day: "সোমবার", subjects: ["ইংরেজি (২য় পত্র)", "বাংলা (২য় পত্র)", "জীববিজ্ঞান (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 2 },
+        { date: "September 2, 2025", day: "মঙ্গলবার", subjects: ["ইংরেজি (২য় পত্র)", "তথ্য ও যোগাযোগ প্রযুক্তি", "বাংলা (২য় পত্র)", "রসায়ন (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 2 },
+        { date: "September 3, 2025", day: "বুধবার", subjects: ["ইংরেজি (২য় পত্র)", "তথ্য ও যোগাযোগ প্রযুক্তি", "বাংলা (২য় পত্র)", "জীববিজ্ঞান (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 2 },
+        { date: "September 4, 2025", day: "বৃহস্পতিবার", subjects: ["ইংরেজি (২য় পত্র)", "তথ্য ও যোগাযোগ প্রযুক্তি", "বাংলা (২য় পত্র)", "জীববিজ্ঞান (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 2 },
+        { date: "September 5, 2025", day: "শুক্রবার", subjects: ["প্রথম তিন পরীক্ষার রিভিশন"], week: 2 },
+        { date: "September 6, 2025", day: "শনিবার", subjects: ["তথ্য ও যোগাযোগ প্রযুক্তি", "বাংলা (২য় পত্র)", "জীববিজ্ঞান (২য় পত্র)", "রসায়ন (২য় পত্র)", "উচ্চতর গণিত (২য় পত্র)"], week: 2 },
 
-        // আপনার দেওয়া Firebase কনফিগারেশন
-        const firebaseConfig = {
-          apiKey: "AIzaSyCTvWKR6pt8HrHoiDHo3wqoSXtXdXJjHHQ",
-          authDomain: "priya-ai-q14sj.firebaseapp.com",
-          projectId: "priya-ai-q14sj",
-          storageBucket: "priya-ai-q14sj.firebasestorage.app",
-          messagingSenderId: "113852032496",
-          appId: "1:113852032496:web:a6156f264323f54d9ae935"
+        { date: "September 7, 2025", day: "রবিবার", subjects: ["ইংরেজি (২য় পত্র) পরীক্ষা"], isExamDay: true, nextDaySubjects: ["তথ্য ও যোগাযোগ প্রযুক্তি"], week: 3 },
+        { date: "September 8, 2025", day: "সোমবার", subjects: ["তথ্য ও যোগাযোগ প্রযুক্তি পরীক্ষা"], isExamDay: true, nextDaySubjects: ["বাংলা (২য় পত্র)"], week: 3 },
+        { date: "September 9, 2025", day: "মঙ্গলবার", subjects: ["বাংলা (২য় পত্র) পরীক্ষা"], isExamDay: true, nextDaySubjects: ["পদার্থবিজ্ঞান (২য় পত্র)"], week: 3 },
+        { date: "September 10, 2025", day: "বুধবার", subjects: ["পদার্থবিজ্ঞান (২য় পত্র)"], week: 3 },
+        { date: "September 11, 2025", day: "বৃহস্পতিবার", subjects: ["পদার্থবিজ্ঞান (২য় পত্র) পরীক্ষা"], isExamDay: true, nextDaySubjects: ["রসায়ন (২য় পত্র)"], week: 3 },
+        { date: "September 12, 2025", day: "শুক্রবার", subjects: ["রসায়ন (২য় পত্র)"], week: 3 },
+        { date: "September 13, 2025", day: "শনিবার", subjects: ["রসায়ন (২য় পত্র)"], week: 3 },
+
+        { date: "September 14, 2025", day: "রবিবার", subjects: ["রসায়ন (২য় পত্র)"], week: 4 },
+        { date: "September 15, 2025", day: "সোমবার", subjects: ["রসায়ন (২য় পত্র) পরীক্ষা"], isExamDay: true, nextDaySubjects: ["জীববিজ্ঞান (২য় পত্র)"], week: 4 },
+        { date: "September 16, 2025", day: "মঙ্গলবার", subjects: ["জীববিজ্ঞান (২য় পত্র)"], week: 4 },
+        { date: "September 17, 2025", day: "বুধবার", subjects: ["জীববিজ্ঞান (২য় পত্র) পরীক্ষা"], isExamDay: true, nextDaySubjects: ["উচ্চতর গণিত (২য় পত্র)"], week: 4 },
+        { date: "September 18, 2025", day: "বৃহস্পতিবার", subjects: ["উচ্চতর গণিত (২য় পত্র) পরীক্ষা"], isExamDay: true, week: 4 }
+    ];
+
+    const tableBody = document.getElementById('schedule-body');
+    const weeklyCounts = {};
+    let lastWeek = 0;
+    
+    // Store completion status and notes in localStorage
+    const completionData = JSON.parse(localStorage.getItem('studyCompletionData')) || {};
+    
+    // Helper function to save data to localStorage
+    const saveData = () => {
+        localStorage.setItem('studyCompletionData', JSON.stringify(completionData));
+    };
+
+    // Helper function to get a unique key for a day and subject
+    const getKey = (date, subject) => `${date}-${subject}`;
+    
+    // Formats a Date object to a human-readable Bengali string
+    const formatDateBengali = (date) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        // Use an array to manually map month names to avoid relying on Intl.DateTimeFormat
+        const bengaliMonths = ['জানুয়ারী', 'ফেব্রুয়ারী', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+        const day = date.getDate();
+        const month = bengaliMonths[date.getMonth()];
+        const year = date.getFullYear();
+
+        const suffix = (day) => {
+            if (day === 1) return 'লা';
+            if (day === 2) return 'রা';
+            if (day === 3) return 'রা';
+            if (day === 4) return 'ঠা';
+            if (day === 5) return 'ই';
+            if (day === 6) return 'ই';
+            if (day === 7) return 'ই';
+            if (day === 8) return 'ই';
+            if (day === 9) return 'ই';
+            if (day === 10) return 'ই';
+            if (day === 11) return 'ই';
+            if (day === 12) return 'ই';
+            if (day === 13) return 'ই';
+            if (day === 14) return 'ই';
+            if (day === 15) return 'ই';
+            if (day === 16) return 'ই';
+            if (day === 17) return 'ই';
+            if (day === 18) return 'ই';
+            if (day === 19) return 'ই';
+            if (day === 20) return 'ই';
+            if (day === 21) return 'শে';
+            if (day === 22) return 'শে';
+            if (day === 23) return 'শে';
+            if (day === 24) return 'শে';
+            if (day === 25) return 'শে';
+            if (day === 26) return 'শে';
+            if (day === 27) return 'শে';
+            if (day === 28) return 'শে';
+            if (day === 29) return 'শে';
+            if (day === 30) return 'শে';
+            if (day === 31) return 'শে';
+            return '';
         };
 
-        // Firebase শুরু করা
-        const app = firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-        auth = firebase.auth();
+        return `${day}${suffix(day)} ${month}, ${year}`;
+    };
 
-        // Gemini API Key
-        const geminiApiKey = "AIzaSyA0TeD-ctQp9d7EhX0ZpQcamNp02_5O6tw";
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${geminiApiKey}`;
+    // Helper function to create and append the weekly summary row
+    function appendWeeklySummary(weekNumber, counts) {
+        if (Object.keys(counts).length === 0) return;
+        
+        const summaryRow = document.createElement('tr');
+        summaryRow.className = 'week-summary-row';
+        const summaryCell = document.createElement('td');
+        summaryCell.colSpan = 3;
+        summaryCell.className = 'week-summary-cell';
+        
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'week-summary';
+        const summaryTitle = document.createElement('h3');
+        summaryTitle.textContent = `সপ্তাহ ${weekNumber} এর সংক্ষিপ্ত হিসাব`;
+        summaryDiv.appendChild(summaryTitle);
 
-        // Google লগইন ফাংশন
-        const googleLogin = async () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                await auth.signInWithPopup(provider);
-            } catch (error) {
-                console.error("Google লগইন ব্যর্থ হয়েছে:", error);
-                showErrorMessage('লগইন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+        const summaryList = document.createElement('ul');
+        summaryList.className = 'summary-list';
+        for (const subject in counts) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${subject}: ${counts[subject]} দিন`;
+            summaryList.appendChild(listItem);
+        }
+        summaryDiv.appendChild(summaryList);
+        summaryCell.appendChild(summaryDiv);
+        summaryRow.appendChild(summaryCell);
+        tableBody.appendChild(summaryRow);
+    }
+    
+    // Process each day's data
+    scheduleData.forEach((day, index) => {
+        // If a new week starts, append the previous week's summary
+        if (day.week !== lastWeek && lastWeek !== 0) {
+            appendWeeklySummary(lastWeek, weeklyCounts[lastWeek]);
+        }
+        
+        // Initialize weekly count for the current week if not present
+        if (!weeklyCounts[day.week]) {
+            weeklyCounts[day.week] = {};
+        }
+
+        const row = document.createElement('tr');
+        if (day.isExamDay) {
+            row.classList.add('exam-row');
+        }
+
+        const dateCell = document.createElement('td');
+        dateCell.setAttribute('data-label', 'তারিখ');
+        dateCell.textContent = formatDateBengali(new Date(day.date));
+        row.appendChild(dateCell);
+
+        const dayCell = document.createElement('td');
+        dayCell.setAttribute('data-label', 'দিন');
+        dayCell.textContent = day.day;
+        row.appendChild(dayCell);
+
+        const subjectsCell = document.createElement('td');
+        subjectsCell.setAttribute('data-label', 'বিষয়সমূহ');
+        const subjectList = document.createElement('ul');
+        
+        // Handle subjects for the day
+        const allSubjects = day.subjects.slice();
+        if (day.nextDaySubjects && day.nextDaySubjects.length > 0) {
+            allSubjects.push(`(পরীক্ষার পর: ${day.nextDaySubjects.join(", ")})`);
+        }
+
+        allSubjects.forEach(subject => {
+            const listItem = document.createElement('li');
+            
+            // Checkbox and subject name
+            const checkbox = document.createElement('div');
+            checkbox.className = 'custom-checkbox';
+            const key = getKey(day.date, subject);
+            
+            if (completionData[key] && completionData[key].completed) {
+                checkbox.classList.add('completed');
             }
-        };
-
-        // লগআউট ফাংশন
-        const logout = async () => {
-            if (unsubscribeFromFirestore) {
-                unsubscribeFromFirestore();
-            }
-            await auth.signOut();
-        };
-
-        // ব্যবহারকারী লগইন অবস্থা পর্যবেক্ষণ
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                loginContainer.classList.add('hidden');
-                chatContainer.classList.remove('hidden');
-                userNameEl.textContent = user.displayName;
-                userPhotoEl.src = user.photoURL || 'https://placehold.co/40x40/f1f1f1/333?text=user';
-                loadChatHistory(user.uid);
-            } else {
-                currentUser = null;
-                loginContainer.classList.remove('hidden');
-                chatContainer.classList.add('hidden');
-            }
-        });
-
-        // চ্যাট হিস্টরি লোড করা এবং রিয়েল-টাইম আপডেট শোনা
-        const loadChatHistory = (userId) => {
-            if (unsubscribeFromFirestore) {
-                unsubscribeFromFirestore();
-            }
-
-            const messagesRef = db.collection(`artifacts/${firebaseConfig.appId}/users/${userId}/messages`);
-            const q = messagesRef.orderBy("timestamp", "asc");
-
-            unsubscribeFromFirestore = q.onSnapshot(querySnapshot => {
-                chatWindow.innerHTML = ''; // উইন্ডো খালি করা
-                chatHistory = [];
-                querySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    appendMessage(data.text, data.sender, false);
-                    chatHistory.push({ role: data.sender === 'user' ? 'user' : 'model', parts: [{ text: data.text }] });
-                });
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }, error => {
-                console.error("Firestore ডেটা লোড করতে সমস্যা হয়েছে:", error);
-                showErrorMessage('চ্যাটের ইতিহাস লোড করা যায়নি।');
-            });
-        };
-
-        // মেসেজ পাঠানোর ফাংশন
-        const sendMessage = async () => {
-            const userText = userInput.value.trim();
-            if (userText === '' || !currentUser) return;
-
-            const userMessageData = {
-                text: userText,
-                sender: 'user',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                userEmail: currentUser.email,
-                userName: currentUser.displayName
+            
+            checkbox.onclick = () => {
+                const isCompleted = checkbox.classList.toggle('completed');
+                if (!completionData[key]) { completionData[key] = {}; }
+                completionData[key].completed = isCompleted;
+                saveData();
             };
-
-            await addMessageToFirestore(userMessageData);
             
-            userInput.value = '';
-            appendLoadingIndicator();
+            listItem.appendChild(checkbox);
             
-            try {
-                chatHistory.push({ role: "user", parts: [{ text: userText }] });
-
-                const payload = { contents: chatHistory };
-                const response = await fetchWithRetry(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
-
-                removeLoadingIndicator();
-
-                const data = await response.json();
-                
-                if (data.candidates && data.candidates.length > 0 && data.candidates[0].content && data.candidates[0].content.parts) {
-                    const aiText = data.candidates[0].content.parts[0].text;
-                    const aiMessageData = {
-                        text: aiText,
-                        sender: 'model',
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-                    await addMessageToFirestore(aiMessageData);
-                    chatHistory.push({ role: "model", parts: [{ text: aiText }] });
-                } else {
-                    showErrorMessage('দুঃখিত, এই প্রশ্নের উত্তর দেওয়া সম্ভব হচ্ছে না। অন্য কিছু চেষ্টা করুন।');
-                    chatHistory.pop();
-                }
-            } catch (error) {
-                console.error('AI Response পেতে সমস্যা হয়েছে:', error);
-                removeLoadingIndicator();
-                showErrorMessage(`দুঃখিত, একটি সমস্যা হয়েছে। অনুগ্রহ করে ইন্টারনেট সংযোগ পরীক্ষা করুন। <br><small>Error: ${error.message}</small>`);
-            }
-        };
-
-        // Firestore-এ মেসেজ যুক্ত করা
-        const addMessageToFirestore = async (messageData) => {
-            if (!currentUser) return;
-            try {
-                const messagesRef = db.collection(`artifacts/${firebaseConfig.appId}/users/${currentUser.uid}/messages`);
-                await messagesRef.add(messageData);
-            } catch (error) {
-                console.error("Firestore-এ মেসেজ যুক্ত করতে সমস্যা হয়েছে:", error);
-                showErrorMessage('মেসেজ সংরক্ষণ করা যায়নি।');
-            }
-        };
-
-        // Exponential Backoff retry mechanism
-        const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
-            try {
-                const response = await fetch(url, options);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response;
-            } catch (error) {
-                if (retries > 0) {
-                    console.error(`Fetch failed, retrying in ${delay}ms...`, error);
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return fetchWithRetry(url, options, retries - 1, delay * 2);
-                } else {
-                    throw error;
-                }
-            }
-        };
-
-        // চ্যাট উইন্ডোতে মেসেজ যুক্ত করার ফাংশন
-        const appendMessage = (text, sender, isNewMessage = true) => {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', 'p-4', 'rounded-3xl', 'max-w-[85%]', 'shadow-lg', 'transition-all', 'duration-300', 'transform', 'hover:scale-105');
+            const subjectSpan = document.createElement('span');
+            subjectSpan.textContent = subject;
+            listItem.appendChild(subjectSpan);
+            subjectList.appendChild(listItem);
             
-            let messageContent = text;
-            if (sender === 'user') {
-                messageDiv.classList.add('self-end', 'bg-indigo-600', 'text-white', 'rounded-br-lg');
-            } else {
-                messageDiv.classList.add('self-start', 'bg-white', 'text-gray-800', 'rounded-bl-lg', 'flex', 'flex-col', 'items-start', 'gap-2');
-                const avatarDiv = document.createElement('div');
-                avatarDiv.classList.add('flex', 'items-center', 'gap-2', 'mb-2');
-                avatarDiv.innerHTML = `<span class="text-2xl text-indigo-500">🤖</span><span class="font-semibold">এআই বন্ধু</span>`;
-                messageDiv.appendChild(avatarDiv);
-
-                // সুন্দর করে রিপ্লাই সাজানো
-                messageContent = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
-                messageContent = messageContent.replace(/\*(.*?)\*/g, '<em>$1</em>'); // Italic
-                messageContent = messageContent.replace(/^- (.*)$/gm, '<li class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i><span>$1</span></li>');
-                messageContent = `<ul>${messageContent}</ul>`;
-                
-                // নতুন লাইনের জন্য <br>
-                messageContent = messageContent.replace(/\n/g, '<br>');
-                messageContent = messageContent.replace(/<\/ul><br>/g, '</ul>'); // বুলেটের পর অতিরিক্ত <br> সরানো
-            }
-
-            const textDiv = document.createElement('div');
-            textDiv.innerHTML = messageContent;
-            messageDiv.appendChild(textDiv);
-            chatWindow.appendChild(messageDiv);
-
-            if (isNewMessage) {
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }
-        };
-        
-        // লোডিং অ্যানিমেশন দেখানোর ফাংশন
-        const appendLoadingIndicator = () => {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'loading-indicator';
-            loadingDiv.classList.add('message', 'self-start', 'bg-white', 'text-gray-800', 'p-4', 'rounded-3xl', 'rounded-bl-lg', 'max-w-[85%]', 'shadow-lg', 'flex', 'items-center', 'gap-2');
-            loadingDiv.innerHTML = `<span class="text-2xl text-indigo-500">🤖</span><div class="loading-dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>`;
-            chatWindow.appendChild(loadingDiv);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-            sendButton.disabled = true;
-            userInput.disabled = true;
-        };
-
-        // লোডিং অ্যানিমেশন সরানোর ফাংশন
-        const removeLoadingIndicator = () => {
-            const indicator = document.getElementById('loading-indicator');
-            if (indicator) indicator.remove();
-            sendButton.disabled = false;
-            userInput.disabled = false;
-            userInput.focus();
-        };
-
-        // ইউআই-তে ত্রুটি বার্তা দেখানো
-        const showErrorMessage = (message) => {
-            const errorDiv = document.createElement('div');
-            errorDiv.classList.add('message', 'self-start', 'bg-red-500', 'text-white', 'p-3', 'rounded-2xl', 'rounded-bl-none', 'max-w-[85%]', 'shadow-md');
-            errorDiv.innerHTML = `<span class="text-2xl mr-2">❌</span>${message}`;
-            chatWindow.appendChild(errorDiv);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        };
-
-        // ইভেন্ট লিসেনার
-        googleLoginBtn.addEventListener('click', googleLogin);
-        logoutBtn.addEventListener('click', logout);
-        sendButton.addEventListener('click', sendMessage);
-        userInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' && !sendButton.disabled) {
-                sendMessage();
+            // Count subjects for the weekly summary, excluding non-subjects
+            const baseSubject = subject.replace(/ পরীক্ষা$/, '').replace(/ \(পরীক্ষার পর:.*$/, '');
+            if (baseSubject.trim() !== "" && baseSubject !== "সার্বিক রিভিশন" && baseSubject !== "প্রথম তিন পরীক্ষার রিভিশন") {
+                 weeklyCounts[day.week][baseSubject] = (weeklyCounts[day.week][baseSubject] || 0) + 1;
             }
         });
 
-    </script>
+        subjectsCell.appendChild(subjectList);
+        row.appendChild(subjectsCell);
+        tableBody.appendChild(row);
+
+        lastWeek = day.week;
+
+        // Append summary for the very last week
+        if (index === scheduleData.length - 1) {
+            appendWeeklySummary(lastWeek, weeklyCounts[lastWeek]);
+        }
+    });
+    
+    // Full-page modal for today's routine logic
+    const todayModal = document.getElementById('todayModal');
+    const showTodayBtn = document.getElementById('show-today-btn');
+    const closeTodayBtn = document.getElementById('close-modal-btn');
+    const modalDateDisplay = document.getElementById('modal-date');
+    const prevDateBtn = document.getElementById('prev-date-btn');
+    const nextDateBtn = document.getElementById('next-date-btn');
+    const dailyContent = document.getElementById('daily-schedule-content');
+    
+    let currentDateIndex = 0;
+    
+    const renderDailySchedule = (dateIndex) => {
+        dailyContent.innerHTML = '';
+        const todayData = scheduleData[dateIndex];
+        
+        // Format the date for display in the modal header
+        const formattedDate = formatDateBengali(new Date(todayData.date));
+        modalDateDisplay.textContent = formattedDate;
+
+        if (todayData) {
+            todayData.subjects.forEach(subject => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'daily-schedule-item';
+                
+                const subjectHeading = document.createElement('h3');
+                const checkbox = document.createElement('div');
+                checkbox.className = 'custom-checkbox';
+                const key = getKey(todayData.date, subject);
+                
+                if (completionData[key] && completionData[key].completed) {
+                    checkbox.classList.add('completed');
+                }
+                
+                checkbox.onclick = () => {
+                    const isCompleted = checkbox.classList.toggle('completed');
+                    if (!completionData[key]) { completionData[key] = {}; }
+                    completionData[key].completed = isCompleted;
+                    saveData();
+                };
+
+                subjectHeading.appendChild(checkbox);
+                const subjectSpan = document.createElement('span');
+                subjectSpan.textContent = subject;
+                subjectHeading.appendChild(subjectSpan);
+                itemDiv.appendChild(subjectHeading);
+                
+                const notesLabel = document.createElement('p');
+                notesLabel.textContent = "নোট যুক্ত করুন:";
+                notesLabel.style.margin = "0 0 5px 0";
+                itemDiv.appendChild(notesLabel);
+
+                const notesTextarea = document.createElement('textarea');
+                notesTextarea.placeholder = "আপনার নোট এখানে লিখুন...";
+                if (completionData[key] && completionData[key].notes) {
+                    notesTextarea.value = completionData[key].notes;
+                }
+                
+                notesTextarea.oninput = () => {
+                    if (!completionData[key]) { completionData[key] = {}; }
+                    completionData[key].notes = notesTextarea.value;
+                    saveData();
+                };
+                
+                itemDiv.appendChild(notesTextarea);
+                dailyContent.appendChild(itemDiv);
+            });
+        } else {
+            const noRoutineMsg = document.createElement('div');
+            noRoutineMsg.className = 'no-routine-message';
+            noRoutineMsg.textContent = "এই দিনের জন্য কোনো রুটিন নেই।";
+            dailyContent.appendChild(noRoutineMsg);
+        }
+    };
+    
+    // Find today's date in the schedule
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize today's date
+    currentDateIndex = scheduleData.findIndex(d => {
+        const dateObj = new Date(d.date);
+        dateObj.setHours(0, 0, 0, 0);
+        return dateObj.getTime() === today.getTime();
+    });
+    
+    if (currentDateIndex === -1) {
+        currentDateIndex = 0; // Default to the first day if today's date is not in the schedule
+    }
+
+    showTodayBtn.onclick = () => {
+        todayModal.style.display = "flex";
+        renderDailySchedule(currentDateIndex);
+        updateNavigationButtons();
+    };
+    
+    closeTodayBtn.onclick = () => {
+        todayModal.style.display = "none";
+    };
+
+    window.onclick = (event) => {
+        if (event.target == todayModal) {
+            todayModal.style.display = "none";
+        }
+    };
+
+    // Update navigation buttons state
+    const updateNavigationButtons = () => {
+        prevDateBtn.disabled = currentDateIndex <= 0;
+        nextDateBtn.disabled = currentDateIndex >= scheduleData.length - 1;
+    };
+
+    prevDateBtn.onclick = () => {
+        if (currentDateIndex > 0) {
+            currentDateIndex--;
+            renderDailySchedule(currentDateIndex);
+            updateNavigationButtons();
+        }
+    };
+
+    nextDateBtn.onclick = () => {
+        if (currentDateIndex < scheduleData.length - 1) {
+            currentDateIndex++;
+            renderDailySchedule(currentDateIndex);
+            updateNavigationButtons();
+        }
+    };
+});
+</script>
+
 </body>
 </html>
